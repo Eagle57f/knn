@@ -6,7 +6,7 @@ import colorama
 colorama.init()
 
 class Application():
-    def __init__(self):
+    def __init__(self, show_plot:bool=True):
         
         self.data = []
         self.x = list(csv.DictReader(open("table.csv", "r", encoding="utf8"), delimiter=";"))[-1]
@@ -33,11 +33,15 @@ class Application():
         
         def knn(k):
             result_dict = {}
+            i = 0
             for name, dist, caracts in self.data:
-                if name not in "xX/?":
+                if name not in "xX/?" and i<k:
+                    i+=1
                     result_dict[name] = 0
+            i = 0
             for name, dist, caracts in self.data:
-                if name not in "xX/?":
+                if name not in "xX/?" and i<k:
+                    i+=1
                     result_dict[name] += dist
 
             result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
@@ -65,9 +69,9 @@ f'''
 
             self.data.sort(key=lambda a: a[1])
 
-
-            plot()
-            knn(5)
+            if show_plot:
+                plot()
+            knn(2)
             
             
 Application()
