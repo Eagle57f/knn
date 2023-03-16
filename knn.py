@@ -75,3 +75,10 @@ f'''
             
             
 Application()
+
+
+
+"""
+TODO: add a legend -> https://qastack.fr/programming/19125722/adding-a-legend-to-pyplot-in-matplotlib-in-the-simplest-manner-possible
+TODO: add the number of points in the k neighbors for each caracteristic
+"""
