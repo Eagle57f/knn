@@ -5,6 +5,7 @@ import colorama
 from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
+from os import path
 
 colorama.init()
 
@@ -12,7 +13,7 @@ class Application():
     def __init__(self, show_plot:bool=True, k:int=5):
         
         self.data = []
-        self.x = list(csv.DictReader(open(r"table.csv", "r", encoding="utf8"), delimiter=";"))[-1]
+        self.x = list(csv.DictReader(open(f"{path.dirname(__file__)}\\table.csv", "r", encoding="utf8"), delimiter=";"))[-1]
         
         def plot():
                 x = [x[2][0] for x in self.data]
@@ -82,7 +83,7 @@ f'''
             
         
         
-        with open(r"table.csv", "r", encoding="utf8") as self.csv_file_path:
+        with open(f"{path.dirname(__file__)}\\table.csv", "r", encoding="utf8") as self.csv_file_path:
             self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
 
             for line in self.csv_file:
