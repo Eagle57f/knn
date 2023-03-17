@@ -5,12 +5,13 @@ import colorama
 from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
-from os import path
+from os import path, system
 
 colorama.init()
 
 class Application():
     def __init__(self, show_plot:bool=True, k:int=5):
+        system("cls")
         
         self.data = []
         self.x = list(csv.DictReader(open(f"{path.dirname(__file__)}\\Iris.csv", "r", encoding="utf8"), delimiter=";"))[-1]
