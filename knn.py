@@ -34,8 +34,6 @@ class Application():
 
 
                 custom_lines = [Line2D([], [], color='w', markerfacecolor=name_colors[i], marker='o', markersize=8) for i in range(len({name[0] for name in self.data}))]
-
-                print(self.data)
                 
                 data_sigle_name = []
                 for name, *args in self.data:
