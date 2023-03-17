@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import csv
 import math
 import colorama
-from matplotlib.colors import ListedColormap
 from matplotlib.lines import Line2D
 import tabulate
+from collections import OrderedDict
 
 colorama.init()
 
@@ -35,7 +35,13 @@ class Application():
 
                 custom_lines = [Line2D([], [], color='w', markerfacecolor=name_colors[i], marker='o', markersize=8) for i in range(len({name[0] for name in self.data}))]
 
-                plt.legend(custom_lines, {name[0] for name in self.data})
+                print(self.data)
+                
+                data_sigle_name = []
+                for name, *args in self.data:
+                    data_sigle_name.append(name)
+                
+                plt.legend(custom_lines, list(OrderedDict.fromkeys(data_sigle_name)))
                 
                 plt.show()
         
@@ -87,13 +93,13 @@ f'''
                     self.data.append((line[name], distance_to_x([self.x[caract] for caract in caracts], [line[caract] for caract in caracts]), [line[caract] for caract in caracts]))
 
             self.data.sort(key=lambda a: a[1])
-
+            knn(k)
             if show_plot:
                 plot()
-            knn(k)
             
             
-Application(k=2)
+            
+Application(k=2, show_plot=True)
 
 
 
