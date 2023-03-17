@@ -2,27 +2,31 @@ import matplotlib.pyplot as plt
 import csv
 import math
 import colorama
+from matplotlib.colors import ListedColormap
 
 colorama.init()
 
 class Application():
-    def __init__(self, show_plot:bool=True):
+    def __init__(self, show_plot:bool=True, k:int=5):
         
         self.data = []
-        self.x = list(csv.DictReader(open("table.csv", "r", encoding="utf8"), delimiter=";"))[-1]
+        self.x = list(csv.DictReader(open(r"D:\1ere\NSI\Knn plus proches voisins\table.csv", "r", encoding="utf8"), delimiter=";"))[-1]
         
         def plot():
                 x = [x[2][0] for x in self.data]
                 y = [y[2][1] for y in self.data]
                 names = list(dict.fromkeys([x[0] for x in self.data]))
+
                 colors = ["green", "red", "blue", "yellow"]
                 name_colors = []
-                for name in [x[0] for x in self.data]:
+                for name in [x[1] for x in self.data]:
                     name_colors.append(colors[names.index(name)])
-                    
+
                 points_list = list(zip(x, y, name_colors))
 
-                plt.scatter(x = [int(x[0]) for x in points_list], y = [int(y[1]) for y in points_list], c = [c[2] for c in points_list])
+
+                self.scatter = plt.scatter(x = [int(x[0]) for x in points_list], y = [int(y[1]) for y in points_list], c = [c[2] for c in points_list])
+                plt.legend(["x*5" , "x*10"])
                 plt.show()
         
         def distance_to_x(x, caracts):
@@ -46,10 +50,12 @@ class Application():
 
             result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
             output_text = ""
+            
             for n, v in [(name, result_dict[name]) for name in result_dict.keys()]:
                 output_text += f"{colorama.Fore.CYAN}{n}: {colorama.Fore.WHITE}{v}\n"
             print(
 f'''
+{colorama.Fore.RED}K: {colorama.Fore.BLUE}{k}
 {colorama.Fore.RED}Output: {colorama.Fore.BLUE}{colorama.Style.BRIGHT}{list(result_dict.keys())[0]}{colorama.Style.RESET_ALL}
 {colorama.Fore.RED}Possibilités: {colorama.Fore.BLUE}{", ".join(list(result_dict.keys()))}
 
@@ -59,7 +65,7 @@ f'''
 )
         
         
-        with open("table.csv", "r", encoding="utf8") as self.csv_file_path:
+        with open(r"D:\1ere\NSI\Knn plus proches voisins\table.csv", "r", encoding="utf8") as self.csv_file_path:
             self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
 
             for line in self.csv_file:
@@ -71,10 +77,10 @@ f'''
 
             if show_plot:
                 plot()
-            knn(2)
+            knn(k)
             
             
-Application()
+Application(k=5)
 
 
 
