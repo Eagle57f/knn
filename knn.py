@@ -10,11 +10,35 @@ from os import path, system
 colorama.init()
 
 class Application():
-    def __init__(self, show_plot:bool=True, k:int=5):
+    """
+    The .svg file must be is this form:
+    
+    
+        The first column must be the names of the possibilities
+            ▼
+    +=================+==============+==============+==============+
+    ‖ Name            ‖   Caracter 1 |   Caracter 2 |   Caracter n ‖   <- The first row must be the titles of the columns
+    +=================+==============+==============+==============+
+    ‖ aaaaaaaaaaa     ‖       50     |    2.8124    |      ...     ‖
+    +-----------------+--------------+--------------+--------------+
+    ‖ bbbbbbbbbbbbbb  ‖       50     |    2.84454   |      ...     ‖
+    +-----------------+--------------+--------------+--------------+
+    ‖ aaaaaaaaaaa     ‖       50     |    3.69878   |      ...     ‖
+    +-----------------+--------------+--------------+--------------+
+    ‖ bbbbbbbbbbbbbb  ‖       50     |    3.69878   |      ...     ‖
+    +-----------------+--------------+--------------+--------------+
+    ‖ bbbbbbbbbbbbbb  ‖       50     |    3.69878   |      ...     ‖
+    +-----------------+--------------+--------------+--------------+
+    ‖ x               ‖       50     |    3.69878   |      ...     ‖  <- The last row must be the searched item
+    +=================+==============+==============+==============+
+    """
+    def __init__(self, k:int=5, file_name:str="table", show_plot:bool=True):
         system("cls")
+
+            
         
         self.data = []
-        self.x = list(csv.DictReader(open(f"{path.dirname(__file__)}\\Iris.csv", "r", encoding="utf8"), delimiter=";"))[-1]
+        self.x = list(csv.DictReader(open(f"{path.dirname(__file__)}\\{file_name}.csv", "r", encoding="utf8"), delimiter=";"))[-1]
         
         def plot():
                 x = [x[2][0] for x in self.data]
@@ -32,6 +56,8 @@ class Application():
 
 
                 self.scatter = plt.scatter(x = [float(x[0]) for x in points_list], y = [float(y[1]) for y in points_list], c = [c[2] for c in points_list])
+                
+                
                 
                 circle = plt.Circle((float(self.x[list(self.x.keys())[1]]), float(self.x[list(self.x.keys())[2]])), radius=self.data[k][1], alpha=0.1)
                 plt.gca().add_artist(circle)
@@ -97,7 +123,7 @@ f'''
             
         
         
-        with open(f"{path.dirname(__file__)}\\Iris.csv", "r", encoding="utf8") as self.csv_file_path:
+        with open(f"{path.dirname(__file__)}\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
             self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
             for line in self.csv_file:
                 if line[list(line.keys())[-1]] != "x":
@@ -105,6 +131,10 @@ f'''
                     self.data.append((line[name], distance_to_x([self.x[caract] for caract in caracts], [line[caract] for caract in caracts]), [line[caract] for caract in caracts]))
 
             self.data.sort(key=lambda a: a[1])
+            
+            if k>len(self.data):
+                k = len(self.data)-1
+            
             knn(k)
             if show_plot:
                 if len(self.x)-1 <= 2:
@@ -114,6 +144,24 @@ f'''
             
             
             
-Application(k=20, show_plot=True)
 
 
+
+print("Example: Application(k=80, show_plot=True, file_name='iris')")
+
+
+while True:
+    response = input("Commande:  ")
+    if response == "exit":
+        break
+    elif response == "help":
+        system("cls")
+        print(Application.__doc__)
+    elif "execute" in response:
+        system("cls")
+        print(response[8:])
+        exec(response[8:])
+    elif response == "exemple":
+        Application(k=80, show_plot=True, file_name='iris')
+    
+    
