@@ -65,6 +65,8 @@ class Application():
                     i+=1
                     result_dict[name] += dist
                     result_number[name] += 1
+            for name in result_dict.keys():
+                result_dict[name] /= result_number[name]
             result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
             
             output_text = [[f"{colorama.Style.BRIGHT}{colorama.Fore.CYAN}Name{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{colorama.Fore.LIGHTBLUE_EX}Points{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{colorama.Fore.BLUE}Distance{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}"]]
@@ -98,10 +100,6 @@ f'''
             
             
             
-Application(k=2, show_plot=True)
+Application(k=8, show_plot=True)
 
 
-
-"""
-TODO: add a legend -> https://qastack.fr/programming/19125722/adding-a-legend-to-pyplot-in-matplotlib-in-the-simplest-manner-possible
-"""
