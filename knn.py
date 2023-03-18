@@ -162,6 +162,7 @@ while True:
         print(response[8:])
         exec(response[8:])
     elif response == "exemple":
+        system("cls")
         Application(k=80, show_plot=True, file_name='iris')
     
     
