@@ -6,6 +6,8 @@ from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
 from os import path, system
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
 
 colorama.init()
 
@@ -40,9 +42,12 @@ class Application():
         self.data = []
         
         
-        def plot():
+        def plot(mode):
+                
                 x = [x[2][0] for x in self.data]
                 y = [y[2][1] for y in self.data]
+                if mode == "3d":
+                    z = [z[2][2] for z in self.data]
                 names = list(dict.fromkeys([x[0] for x in self.data]))
 
                 colors = ["black", "green", "red", "blue", "yellow", "brown", "orange"]
@@ -51,16 +56,30 @@ class Application():
                 for name in [x[0] for x in self.data]:
                     name_colors.append(colors[names.index(name)])
 
+                if mode == "2d":
+                    points_list = list(zip(x, y, name_colors))
+                    ax = plt.axes()
+                    self.scatter = plt.scatter(x = [float(x[0]) for x in points_list], y = [float(y[1]) for y in points_list], c = [c[2] for c in points_list])
+                    circle = plt.Circle((float(self.x[list(self.x.keys())[1]]), float(self.x[list(self.x.keys())[2]])), radius=self.data[k][1], alpha=0.1)
+                    plt.gca().add_artist(circle)
+                    ax.set_aspect("equal")
 
-                points_list = list(zip(x, y, name_colors))
+                elif mode == "3d":
+                    points_list = list(zip(x, y, z, name_colors))
+                    ax = plt.axes(projection ="3d")
+                    self.scatter = ax.scatter3D(xs = [float(x[0]) for x in points_list], ys = [float(y[1]) for y in points_list], zs = [float(z[2]) for z in points_list], c = [c[3] for c in points_list])
 
+                    pi = np.pi
+                    cos = np.cos
+                    sin = np.sin
+                    phi, theta = np.mgrid[0.0:pi:100j, 0.0:2.0*pi:100j]
+                    x = self.data[k][1]*sin(phi)*cos(theta) + float(self.x[list(self.x.keys())[1]])
+                    y = self.data[k][1]*sin(phi)*sin(theta) + float(self.x[list(self.x.keys())[2]])
+                    z = self.data[k][1]*cos(phi) + float(self.x[list(self.x.keys())[3]])
+                    ax.plot_surface(x, y, z, rstride=1, cstride=1, color='c', alpha=0.1, linewidth=0)
+                    ax.set_aspect("equal")
+                
 
-                self.scatter = plt.scatter(x = [float(x[0]) for x in points_list], y = [float(y[1]) for y in points_list], c = [c[2] for c in points_list])
-                
-                
-                
-                circle = plt.Circle((float(self.x[list(self.x.keys())[1]]), float(self.x[list(self.x.keys())[2]])), radius=self.data[k][1], alpha=0.1)
-                plt.gca().add_artist(circle)
 
 
                 custom_lines = [Line2D([], [], color='w', markerfacecolor=colors[i], marker='o', markersize=8) for i in range(len(list(OrderedDict.fromkeys([name[0] for name in self.data]))))]
@@ -72,13 +91,15 @@ class Application():
                 i = 0
                 for point in self.data[:k+1]:
                     if i<=k:
-
-                        plt.plot((float(self.x[list(self.x.keys())[1]]), float(point[2][0])), (float(self.x[list(self.x.keys())[2]]), float(point[2][1])), '--', color=name_colors[i], alpha=0.4)
+                        if mode == "2d":
+                            plt.plot((float(self.x[list(self.x.keys())[1]]), float(point[2][0])), (float(self.x[list(self.x.keys())[2]]), float(point[2][1])), '--', color=name_colors[i], alpha=0.4)
+                        elif mode == "3d":
+                            plt.plot((float(self.x[list(self.x.keys())[1]]), float(point[2][0])), (float(self.x[list(self.x.keys())[2]]), float(point[2][1])), (float(self.x[list(self.x.keys())[3]]), float(point[2][2])) , '--', color=name_colors[i], alpha=0.4)
                         i+=1
 
                 plt.legend(custom_lines, list(OrderedDict.fromkeys(data_sigle_name)))
                 
-                plt.show(),
+                plt.show()
         
         def distance_to_x(x, caracts):
             s = 0
@@ -146,7 +167,9 @@ f'''
             knn(k)
             if show_plot:
                 if len(self.x)-1 <= 2:
-                    plot()
+                    plot("2d")
+                elif len(self.x)-1 == 3:
+                    plot("3d")
                 else:
                     print(f"\n\n{colorama.Fore.RED}More than 2 characteristics: cannot be displayed in a 2D graphic{colorama.Fore.WHITE}")
             
@@ -173,6 +196,9 @@ while True:
     elif response == "example":
         system("cls")
         Application(k=80, show_plot=True, file_name='iris')
+    elif response == "ttt":
+        system("cls")
+        Application(k=5)
     
     
     
