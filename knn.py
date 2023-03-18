@@ -29,7 +29,7 @@ class Application():
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       24     |    3.69878   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
-    ‖ x               ‖       50     |    3.69878   |      ...     ‖  <- The last row must be the searched item
+    ‖ x               ‖       50     |    3.69878   |      ...     ‖   <- The last row must be the searched item, which name must be x or X or / or ?
     +=================+==============+==============+==============+
     """
     def __init__(self, k:int=5, file_name:str="table", show_plot:bool=True):
@@ -38,7 +38,7 @@ class Application():
             
         
         self.data = []
-        self.x = list(csv.DictReader(open(f"{path.dirname(__file__)}\\{file_name}.csv", "r", encoding="utf8"), delimiter=";"))[-1]
+        
         
         def plot():
                 x = [x[2][0] for x in self.data]
@@ -109,13 +109,19 @@ class Application():
             
             for n, v in [(name, result_dict[name]) for name in result_dict.keys()]:
                 output_text.append((f"{colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}", f"{colorama.Fore.LIGHTBLUE_EX}{result_number[n]}{colorama.Fore.WHITE}", f"{colorama.Fore.BLUE}{v}{colorama.Fore.WHITE}"))
+
+            characts_list = []
+            x_keys = list(self.x.keys())[1:]
+            for i in range(len(x_keys)//9+1):
+                characts_list.append(x_keys[i*9:(i+1)*9])
+
             print(
 f'''
 {colorama.Fore.RED}K: {colorama.Fore.BLUE}{k}
 {colorama.Fore.RED}Output: {colorama.Fore.BLUE}{colorama.Style.BRIGHT}{list(result_dict.keys())[0]}{colorama.Style.RESET_ALL}
 
 {colorama.Fore.RED}Possibilities: {colorama.Fore.BLUE}{", ".join(list(result_dict.keys()))}
-{colorama.Fore.RED}Characteristics: {colorama.Fore.BLUE}{", ".join(list(self.x.keys())[1:])}
+{colorama.Fore.RED}Characteristics:\n{colorama.Fore.BLUE}{tabulate.tabulate(characts_list, tablefmt='grid')}
 
 {colorama.Fore.MAGENTA}Results by possibility:{colorama.Fore.WHITE}'''
 )
@@ -125,6 +131,8 @@ f'''
         
         with open(f"{path.dirname(__file__)}\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
             self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
+            self.csv_file = [i for i in self.csv_file]
+            self.x = self.csv_file[-1]
             for line in self.csv_file:
                 if line[list(line.keys())[-1]] != "x":
                     name, *caracts = line.keys()
@@ -157,12 +165,24 @@ while True:
     elif response == "help":
         system("cls")
         print(Application.__doc__)
+        print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
     elif "execute" in response:
         system("cls")
         print(response[8:])
         exec(response[8:])
-    elif response == "exemple":
+    elif response == "example":
         system("cls")
         Application(k=80, show_plot=True, file_name='iris')
     
     
+    
+
+
+"""
+
+TODO +--------+---+------+
+TODO | efkoef | 1 | True | ... avec les caracteristiques
+TODO +--------+---+------+
+
+
+"""
