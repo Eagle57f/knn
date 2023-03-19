@@ -31,8 +31,8 @@ class Application():
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       24     |    3.69878   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
-    ‖ x               ‖       50     |    3.69878   |      ...     ‖   <- The last row must be the searched item, which name must be x or X or / or ?
-    +=================+==============+==============+==============+
+    ‖ x               ‖       50     |    3.69878   |      ...     ‖   <- The last row must be the searched item, 
+    +=================+==============+==============+==============+      which name must be x or X or / or ?
     """
     def __init__(self, k:int=5, file_name:str="table", show_plot:bool=True):
         system("cls")
@@ -132,9 +132,13 @@ class Application():
                 output_text.append((f"{colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}", f"{colorama.Fore.LIGHTBLUE_EX}{result_number[n]}{colorama.Fore.WHITE}", f"{colorama.Fore.BLUE}{v}{colorama.Fore.WHITE}"))
 
             characts_list = []
+            cols = 4
             x_keys = list(self.x.keys())[1:]
-            for i in range(len(x_keys)//9+1):
-                characts_list.append(x_keys[i*9:(i+1)*9])
+            x_keys_len = len(x_keys)//cols
+            if len(x_keys) % cols !=0:
+                x_keys_len+=1
+            for i in range(x_keys_len):
+                characts_list.append(x_keys[i*cols:(i+1)*cols])
 
             print(
 f'''
@@ -150,7 +154,7 @@ f'''
             
         
         
-        with open(f"{path.dirname(__file__)}\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
+        with open(f"{path.dirname(__file__)}\\tables\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
             self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
             self.csv_file = [i for i in self.csv_file]
             self.x = self.csv_file[-1]
@@ -171,44 +175,35 @@ f'''
                 elif len(self.x)-1 == 3:
                     plot("3d")
                 else:
-                    print(f"\n\n{colorama.Fore.RED}More than 2 characteristics: cannot be displayed in a 2D graphic{colorama.Fore.WHITE}")
+                    print(f"\n\n{colorama.Fore.RED}More than 3 characteristics: cannot be displayed in a 2D  or 3D graphic{colorama.Fore.WHITE}")
             
             
             
 
 
-
-print("Example: Application(k=80, show_plot=True, file_name='iris')")
+system("cls")
+print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
 
 
 while True:
-    response = input("Commande:  ")
+    response = input(f"\n{colorama.Fore.BLUE}Commande:  ")
     if response == "exit":
         break
     elif response == "help":
         system("cls")
+        print(f"{colorama.Fore.RESET}", end="")
         print(Application.__doc__)
         print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
     elif "execute" in response:
         system("cls")
+        print(f"{colorama.Fore.RESET}", end="")
         print(response[8:])
         exec(response[8:])
-    elif response == "example":
+    elif response == "2d":
         system("cls")
+        print(f"{colorama.Fore.RESET}", end="")
         Application(k=80, show_plot=True, file_name='iris')
-    elif response == "ttt":
+    elif response == "3d":
         system("cls")
+        print(f"{colorama.Fore.RESET}", end="")
         Application(k=5)
-    
-    
-    
-
-
-"""
-
-TODO +--------+---+------+
-TODO | efkoef | 1 | True | ... avec les caracteristiques
-TODO +--------+---+------+
-
-
-"""
