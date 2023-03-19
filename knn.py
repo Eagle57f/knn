@@ -5,11 +5,19 @@ import colorama
 from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
-from os import path, system
+from os import path, system, getenv
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import dotenv
 
 colorama.init()
+
+dotenv.load_dotenv("settings.env", verbose=True)
+default_k = getenv('default_k')
+default_filename = getenv("default_filename")
+default_plot_show = getenv("default_plot_show")
+
+
 
 class Application():
     """
@@ -34,7 +42,10 @@ class Application():
     ‖ x               ‖       50     |    3.69878   |      ...     ‖   <- The last row must be the searched item, 
     +=================+==============+==============+==============+      which name must be x or X or / or ?
     """
-    def __init__(self, k:int=5, file_name:str="table", show_plot:bool=True):
+    def __init__(self, k:int=default_k if isinstance(default_k, int) else 5,
+                 file_name:str=default_filename if isinstance(default_filename, str) else "table",
+                 show_plot:bool=default_filename if isinstance(default_filename, bool) else True
+                 ):
         system("cls")
 
             
@@ -183,27 +194,35 @@ f'''
 
 system("cls")
 print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
+print(default_k, default_filename, default_plot_show)
 
 
 while True:
     response = input(f"\n{colorama.Fore.BLUE}Commande:  ")
-    if response == "exit":
-        break
-    elif response == "help":
+    try:
+        if response == "exit":
+            break
+        elif response == "help":
+            system("cls")
+            print(f"{colorama.Fore.RESET}", end="")
+            print(Application.__doc__)
+            print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
+        elif "execute" in response:
+            system("cls")
+            print(f"{colorama.Fore.RESET}", end="")
+            exec(response[8:])
+        elif response == "2d":
+            system("cls")
+            print(f"{colorama.Fore.RESET}", end="")
+            Application(k=80, show_plot=True, file_name='Iris-2d')
+        elif response == "3d":
+            system("cls")
+            print(f"{colorama.Fore.RESET}", end="")
+            Application(k=5, show_plot=True, file_name='Iris-3d')
+    except FileNotFoundError:
         system("cls")
-        print(f"{colorama.Fore.RESET}", end="")
-        print(Application.__doc__)
-        print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
-    elif "execute" in response:
-        system("cls")
-        print(f"{colorama.Fore.RESET}", end="")
-        print(response[8:])
-        exec(response[8:])
-    elif response == "2d":
-        system("cls")
-        print(f"{colorama.Fore.RESET}", end="")
-        Application(k=80, show_plot=True, file_name='iris')
-    elif response == "3d":
-        system("cls")
-        print(f"{colorama.Fore.RESET}", end="")
-        Application(k=5)
+        print(f"{colorama.Fore.RED}File not found")
+    except TypeError:
+        print(f"{colorama.Fore.RED}One value isn't correct")
+    except NameError:
+        print(f"{colorama.Fore.RED}Perhaps you forgot '' (or \"\") around a string")
