@@ -10,6 +10,7 @@ import numpy as np
 import dotenv
 import tkinter as tk
 import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox
 
 
 colorama.init()
@@ -52,10 +53,10 @@ class Application():
     ‖ x               ‖       50     |    3.69878   |      ...     ‖   <- The last row must be the searched item, 
     +=================+==============+==============+==============+      which name must be x or X or / or ?
     """
-    def __init__(self, k:int=int(default_k) if isinstance(default_k, int) else 5,
-                 file_name:str=default_filename if isinstance(default_filename, str) and default_filename != "" else "iris-2d",
-                 show_plot:bool=default_plot_show if isinstance(default_plot_show, str) else "True",
-                 colors:tuple=(colorama.Fore.RESET)
+    def __init__(self, k:int,
+                 file_name:str,
+                 show_plot:bool,
+                 colors:tuple
                  ):
         
         RED, CYAN, LIGHTBLUE_EX, RESET, BLUE, MAGENTA = colors
@@ -243,7 +244,9 @@ class Tk_Application():
                 self.show_plot = "True"
             else:
                 self.show_plot = "False"
-            Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
+                
+            if self.k_entry.get().isdigit():
+                Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
         
         
         self.root = tk.Tk()
@@ -281,7 +284,8 @@ class Tk_Application():
         self.k_frame.grid(row=0, column=0, sticky="we")
         self.k_label = tk.Label(self.k_frame, text="K:")
         self.k_label.pack(side="left")
-        self.k_entry = tk.Entry(self.k_frame)
+        self.k_var = tk.StringVar(value=default_k)
+        self.k_entry = tk.Entry(self.k_frame, textvariable=self.k_var)
         self.k_entry.pack(side="right", padx=10)
         
         
@@ -363,12 +367,20 @@ class CTk_Application():
                 self.show_plot = "True"
             else:
                 self.show_plot = "False"
-            Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
-            
+                
+            if self.k_entry.get().isdigit():
+                Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
+            else:
+                def msgbox():
+                    msg = CTkMessagebox(title="Error !", message="K value is not integer", border_color="#efb700", border_width=2,
+                                        icon="warning", option_1="Cancel", option_3="Retry", corner_radius=0, width=280, button_width=120)
+                    if msg.get()=="Retry":
+                        msgbox()
+                msgbox()
 
         self.root = ctk.CTk()
         self.root.title("Settings")
-        self.root.geometry("300x160")
+        self.root.geometry("300x200")
         self.root.resizable(False, False)
         
         
@@ -396,7 +408,8 @@ class CTk_Application():
         self.k_frame.grid(row=1, column=0, sticky="we")
         self.k_label = ctk.CTkLabel(self.k_frame, text="K:")
         self.k_label.pack(side="left", padx=5)
-        self.k_entry = ctk.CTkEntry(self.k_frame)
+        self.k_var = ctk.StringVar(value=default_k)
+        self.k_entry = ctk.CTkEntry(self.k_frame, textvariable=self.k_var)
         self.k_entry.pack(side="right", padx=5)
         
         
