@@ -5,15 +5,18 @@ import colorama
 from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
-from os import path, system, getenv
+from os import path, system, getenv, listdir
 import numpy as np
 import dotenv
 import tkinter as tk
 import customtkinter as ctk
 
+
 colorama.init()
 
 dotenv.load_dotenv("settings.env", verbose=True)
+
+default_delimiter = getenv('default_delimiter')
 
 default_k = getenv('default_k')
 default_filename = getenv("default_filename")
@@ -21,6 +24,9 @@ default_plot_show = getenv("default_plot_show")
 
 show_tkinter = getenv("show_tkinter")
 use_custon_tkinter = getenv("use_custon_tkinter")
+
+
+
 
 
 class Application():
@@ -48,19 +54,21 @@ class Application():
     """
     def __init__(self, k:int=int(default_k) if isinstance(default_k, int) else 5,
                  file_name:str=default_filename if isinstance(default_filename, str) and default_filename != "" else "iris-2d",
-                 show_plot:bool=default_plot_show if isinstance(default_plot_show, str) else "True"
+                 show_plot:bool=default_plot_show if isinstance(default_plot_show, str) else "True",
+                 colors:tuple=(colorama.Fore.RESET)
                  ):
+        
+        RED, CYAN, LIGHTBLUE_EX, RESET, BLUE, MAGENTA = colors
+        
+        
         system("cls")
-
+        plt.close()
             
         
         self.data = []
         
         
         def plot(mode):
-            
-            
-            plt.close()
             
             x = [x[2][0] for x in self.data]
             y = [y[2][1] for y in self.data]
@@ -144,10 +152,10 @@ class Application():
                 result_dict[name] /= result_number[name]
             result_dict = dict(sorted(result_dict.items(), key=lambda item: item[1]))
             
-            output_text = [[f"{colorama.Style.BRIGHT}{colorama.Fore.CYAN}Name{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{colorama.Fore.LIGHTBLUE_EX}Points{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{colorama.Fore.BLUE}Distance{colorama.Fore.WHITE}{colorama.Style.RESET_ALL}"]]
+            output_text = [[f"{colorama.Style.BRIGHT}{CYAN}Name{RESET}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{LIGHTBLUE_EX}Points{RESET}{colorama.Style.RESET_ALL}", f"{colorama.Style.BRIGHT}{BLUE}Distance{RESET}{colorama.Style.RESET_ALL}"]]
             
             for n, v in [(name, result_dict[name]) for name in result_dict.keys()]:
-                output_text.append((f"{colorama.Fore.CYAN}{n}{colorama.Fore.WHITE}", f"{colorama.Fore.LIGHTBLUE_EX}{result_number[n]}{colorama.Fore.WHITE}", f"{colorama.Fore.BLUE}{v}{colorama.Fore.WHITE}"))
+                output_text.append((f"{CYAN}{n}{RESET}", f"{LIGHTBLUE_EX}{result_number[n]}{RESET}", f"{BLUE}{v}{RESET}"))
 
             characts_list = []
             cols = 4
@@ -160,20 +168,20 @@ class Application():
 
             print(
 f'''
-{colorama.Fore.RED}K: {colorama.Fore.BLUE}{k}
-{colorama.Fore.RED}Output: {colorama.Fore.BLUE}{colorama.Style.BRIGHT}{list(result_dict.keys())[0]}{colorama.Style.RESET_ALL}
+{RED}K: {BLUE}{k}
+{RED}Output: {BLUE}{colorama.Style.BRIGHT}{list(result_dict.keys())[0]}{colorama.Style.RESET_ALL}
 
-{colorama.Fore.RED}Possibilities: {colorama.Fore.BLUE}{", ".join(list(result_dict.keys()))}
-{colorama.Fore.RED}Characteristics:\n{colorama.Fore.BLUE}{tabulate.tabulate(characts_list, tablefmt='grid')}
+{RED}Possibilities: {BLUE}{", ".join(list(result_dict.keys()))}
+{RED}Characteristics:\n{BLUE}{tabulate.tabulate(characts_list, tablefmt='grid')}
 
-{colorama.Fore.MAGENTA}Results by possibility:{colorama.Fore.WHITE}'''
+{MAGENTA}Results by possibility:{RESET}'''
 )
             print(tabulate.tabulate(output_text,headers='firstrow',tablefmt='grid'))
             
         
         
         with open(f"{path.dirname(__file__)}\\tables\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
-            self.csv_file = csv.DictReader(self.csv_file_path, delimiter=";")
+            self.csv_file = csv.DictReader(self.csv_file_path, delimiter=default_delimiter if isinstance(default_delimiter,str) and default_delimiter != "" else ";")
             self.csv_file = [i for i in self.csv_file]
             self.x = self.csv_file[-1]
             for line in self.csv_file:
@@ -193,7 +201,7 @@ f'''
                 elif len(self.x)-1 == 3:
                     plot("3d")
                 else:
-                    print(f"\n\n{colorama.Fore.RED}More than 3 characteristics: cannot be displayed in a 2D  or 3D graphic{colorama.Fore.WHITE}")
+                    print(f"\n\n{RED}More than 3 characteristics: cannot be displayed in a 2D  or 3D graphic{RESET}")
             
 
             
@@ -201,24 +209,46 @@ f'''
 class Tk_Application():
     def __init__(self):
         self.show_plot = "True"
-        self.file_name = "iris-2d"
+
+        try:
+            self.file_name = [file for file in listdir(f"{path.dirname(__file__)}\\tables")][0]
+        except IndexError:
+            print("No .csv file(s) in /tables")
+            exit()
+        except FileNotFoundError:
+            print("No 'tables' folder")
+            exit()
+
         self.k = 20
+        self.RED = colorama.Fore.RED
+        self.CYAN = colorama.Fore.CYAN
+        self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
+        self.RESET = colorama.Fore.RESET
+        self.BLUE = colorama.Fore.BLUE
+        self.MAGENTA = colorama.Fore.MAGENTA
         
         def app_launch():
-            if self.file_name_entry.get() != "":
-                self.file_name = self.file_name_entry.get()
+            if self.use_colors_var.get() == 0:
+                self.RED = self.CYAN = self.LIGHTBLUE_EX = self.RESET = self.BLUE = self.MAGENTA = colorama.Fore.RESET
+            else:
+                self.RED = colorama.Fore.RED
+                self.CYAN = colorama.Fore.CYAN
+                self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
+                self.RESET = colorama.Fore.RESET
+                self.BLUE = colorama.Fore.BLUE
+                self.MAGENTA = colorama.Fore.MAGENTA
             if self.k_entry.get() != "" and self.k_entry.get().isdigit():
                 self.k = int(self.k_entry.get())
             if self.show_plot_var.get() == 1:
                 self.show_plot = "True"
             else:
                 self.show_plot = "False"
-            Application(k=self.k, file_name=self.file_name, show_plot=self.show_plot)
+            Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
         
         
         self.root = tk.Tk()
         self.root.title("Settings")
-        self.root.geometry("200x80")
+        self.root.geometry("200x115")
         self.root.resizable(False, False)
         
         menubar = tk.Menu(self.root)
@@ -247,20 +277,30 @@ class Tk_Application():
 
         
 
-        self.k_entry = tk.Frame(self.root)
-        self.k_entry.grid(row=0, column=0, sticky="we")
-        self.k_label = tk.Label(self.k_entry, text="K:")
+        self.k_frame = tk.Frame(self.root)
+        self.k_frame.grid(row=0, column=0, sticky="we")
+        self.k_label = tk.Label(self.k_frame, text="K:")
         self.k_label.pack(side="left")
-        self.k_entry = tk.Entry(self.k_entry)
+        self.k_entry = tk.Entry(self.k_frame)
         self.k_entry.pack(side="right", padx=10)
         
+        
+        def get_file_name_optionmenu(value):
+            self.file_name = value
+        
 
-        self.file_name_entry = tk.Frame(self.root)
-        self.file_name_entry.grid(row=1, column=0, sticky="we")
-        self.file_name_label = tk.Label(self.file_name_entry, text="Filename:")
+        self.file_name_frame = tk.Frame(self.root)
+        self.file_name_frame.grid(row=1, column=0, sticky="we")
+        self.file_name_label = tk.Label(self.file_name_frame, text="Filename:")
         self.file_name_label.pack(side="left")
-        self.file_name_entry = tk.Entry(self.file_name_entry)
-        self.file_name_entry.pack(side="right", padx=10)
+        optionmenu_var = tk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables")][0])
+        self.file_name_optionmenu = tk.OptionMenu(self.file_name_frame,
+                                                  optionmenu_var,
+                                                  *[file for file in listdir(f"{path.dirname(__file__)}\\tables")],
+                                                  command=get_file_name_optionmenu
+                                                  )
+        self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
+
 
 
         self.show_plot_frame = tk.Frame(self.root)
@@ -271,6 +311,15 @@ class Tk_Application():
         self.show_plot_checkbutton = tk.Checkbutton(self.show_plot_frame, variable=self.show_plot_var)
         self.show_plot_checkbutton.pack()
         
+
+        self.use_colors_frame = tk.Frame(self.root)
+        self.use_colors_frame.grid(row=3, column=0, sticky=tk.W)
+        self.use_colors_label = tk.Label(self.use_colors_frame, text="Show the results in color:")
+        self.use_colors_label.pack(side="left")
+        self.use_colors_var = tk.IntVar(value=1)
+        self.use_colors_checkbutton = tk.Checkbutton(self.use_colors_frame, variable=self.use_colors_var)
+        self.use_colors_checkbutton.pack()
+        
         
         
         self.root.mainloop()
@@ -280,24 +329,46 @@ class Tk_Application():
 class CTk_Application():
     def __init__(self):
         self.show_plot = "True"
-        self.file_name = "iris-2d"
+
+        try:
+            self.file_name = [file for file in listdir(f"{path.dirname(__file__)}\\tables")][0]
+        except IndexError:
+            print("No .csv file(s) in /tables")
+            exit()
+        except FileNotFoundError:
+            print("No 'tables' folder")
+            exit()
+
         self.k = 20
+        self.RED = colorama.Fore.RED
+        self.CYAN = colorama.Fore.CYAN
+        self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
+        self.RESET = colorama.Fore.RESET
+        self.BLUE = colorama.Fore.BLUE
+        self.MAGENTA = colorama.Fore.MAGENTA
         
         def app_launch():
-            if self.file_name_entry.get() != "":
-                self.file_name = self.file_name_entry.get()
+            if self.use_colors_var.get() == 0:
+                self.RED = self.CYAN = self.LIGHTBLUE_EX = self.RESET = self.BLUE = self.MAGENTA = colorama.Fore.RESET
+            else:
+                self.RED = colorama.Fore.RED
+                self.CYAN = colorama.Fore.CYAN
+                self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
+                self.RESET = colorama.Fore.RESET
+                self.BLUE = colorama.Fore.BLUE
+                self.MAGENTA = colorama.Fore.MAGENTA
             if self.k_entry.get() != "" and self.k_entry.get().isdigit():
                 self.k = int(self.k_entry.get())
             if self.show_plot_var.get() == 1:
                 self.show_plot = "True"
             else:
                 self.show_plot = "False"
-            Application(k=self.k, file_name=self.file_name, show_plot=self.show_plot)
+            Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
             
 
         self.root = ctk.CTk()
         self.root.title("Settings")
-        self.root.geometry("300x125")
+        self.root.geometry("300x160")
         self.root.resizable(False, False)
         
         
@@ -328,13 +399,20 @@ class CTk_Application():
         self.k_entry = ctk.CTkEntry(self.k_frame)
         self.k_entry.pack(side="right", padx=5)
         
-
+        
+        def get_file_name_optionmenu(value):
+            self.file_name = value
+        
         self.file_name_frame = ctk.CTkFrame(self.root, fg_color='transparent')
         self.file_name_frame.grid(row=2, column=0, sticky="we")
         self.file_name_label = ctk.CTkLabel(self.file_name_frame, text="Filename:")
         self.file_name_label.pack(side="left", padx=5)
-        self.file_name_entry = ctk.CTkEntry(self.file_name_frame)
-        self.file_name_entry.pack(side="right", padx=5)
+        optionmenu_var = ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables")][0])
+        self.file_name_optionmenu = ctk.CTkOptionMenu(self.file_name_frame,
+                                       values=[file for file in listdir(f"{path.dirname(__file__)}\\tables")],
+                                       command=get_file_name_optionmenu,
+                                       variable=optionmenu_var)
+        self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
 
 
         self.show_plot_frame = ctk.CTkFrame(self.root, fg_color='transparent')
@@ -345,54 +423,24 @@ class CTk_Application():
         self.show_plot_switch = ctk.CTkSwitch(self.show_plot_frame, variable=self.show_plot_var, text="")
         self.show_plot_switch.pack()
         
+        
+        self.use_colors_frame = ctk.CTkFrame(self.root, fg_color='transparent')
+        self.use_colors_frame.grid(row=4, column=0, sticky=tk.W)
+        self.use_colors_label = ctk.CTkLabel(self.use_colors_frame, text="Show the results in color:")
+        self.use_colors_label.pack(side="left", padx=5)
+        self.use_colors_var = ctk.IntVar(value=1)
+        self.use_colors_checkbutton = ctk.CTkSwitch(self.use_colors_frame, variable=self.use_colors_var)
+        self.use_colors_checkbutton.pack()
 
         
         self.root.mainloop()
         
-        
-
-            
+      
 
 
 
 system("cls")
-print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
-print(default_k, default_filename, default_plot_show, show_tkinter, type(show_tkinter))
-
-
-if show_tkinter == "True":
-    system("cls")
-    if use_custon_tkinter == "True":
-        CTk_Application()
-    else:
-        Tk_Application()
+if use_custon_tkinter == "True":
+    CTk_Application()
 else:
-    while True:
-        response = input(f"\n{colorama.Fore.BLUE}Commande:  ")
-        try:
-            if response == "exit":
-                break
-            elif response == "help":
-                system("cls")
-                print(f"{colorama.Fore.RESET}", end="")
-                print(Application.__doc__)
-                print("Example: execute Application(k=80, show_plot=True, file_name='iris')")
-            elif "execute" in response:
-                system("cls")
-                print(f"{colorama.Fore.RESET}", end="")
-                exec(response[8:])
-            elif response == "2d":
-                system("cls")
-                print(f"{colorama.Fore.RESET}", end="")
-                Application(k=80, show_plot=True, file_name='Iris-2d')
-            elif response == "3d":
-                system("cls")
-                print(f"{colorama.Fore.RESET}", end="")
-                Application(k=5, show_plot=True, file_name='Iris-3d')
-        except FileNotFoundError:
-            system("cls")
-            print(f"{colorama.Fore.RED}File not found")
-        except TypeError:
-            print(f"{colorama.Fore.RED}One value isn't correct")
-        except NameError:
-            print(f"{colorama.Fore.RED}Perhaps you forgot '' (or \"\") around a string")
+    Tk_Application()
