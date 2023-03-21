@@ -3,8 +3,11 @@ from os import path, system, listdir
 
 
 import customtkinter as ctk
+
+# ------------------------------------------
 from Custom_CTkMessagebox import CTkMessagebox
-from Spinbox import CTkSpinbox
+from Custom_CTkSpinbox import CTkSpinbox
+# ------------------------------------------
 
 
 class CTk_Application():
