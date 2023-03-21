@@ -22,7 +22,7 @@ dotenv.load_dotenv("settings.env", verbose=True)
 default_k = getenv('default_k')
 default_filename = getenv("default_filename")
 
-use_custon_tkinter = getenv("use_custon_tkinter")
+use_custon_tkinter = getenv("use_custom_tkinter")
 
 
 
