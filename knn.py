@@ -9,6 +9,7 @@ from os import path, system, getenv
 import numpy as np
 import dotenv
 
+
 # ------------------------------------------
 from CTk_Application import CTk_Application
 from Tk_Application import Tk_Application
@@ -17,8 +18,6 @@ from Tk_Application import Tk_Application
 colorama.init()
 
 dotenv.load_dotenv("settings.env", verbose=True)
-
-default_delimiter = getenv('default_delimiter')
 
 default_k = getenv('default_k')
 default_filename = getenv("default_filename")
@@ -43,7 +42,7 @@ class Application():
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       22     |    2.84454   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
-    ‖ aaaaaaaaaaa     ‖       2*0    |    3.69878   |      ...    ‖
+    ‖ aaaaaaaaaaa     ‖       2*0    |    3.69878   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       31     |    3.69878   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
@@ -55,7 +54,8 @@ class Application():
     def __init__(self, k:int,
                  file_name:str,
                  show_plot:bool,
-                 colors:tuple
+                 colors:tuple,
+                 delimiter:str=";"
                  ):
         
         RED, CYAN, LIGHTBLUE_EX, RESET, BLUE, MAGENTA = colors
@@ -181,7 +181,7 @@ f'''
         
         
         with open(f"{path.dirname(__file__)}\\tables\\{file_name}.csv", "r", encoding="utf8") as self.csv_file_path:
-            self.csv_file = csv.DictReader(self.csv_file_path, delimiter=default_delimiter if isinstance(default_delimiter,str) and default_delimiter != "" else ";")
+            self.csv_file = csv.DictReader(self.csv_file_path, delimiter=delimiter if isinstance(delimiter,str) and delimiter != "" else ";")
             self.csv_file = [i for i in self.csv_file]
             self.x = self.csv_file[-1]
             for line in self.csv_file:

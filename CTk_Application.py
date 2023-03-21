@@ -4,12 +4,13 @@ from os import path, system, listdir
 
 import customtkinter as ctk
 from Custom_CTkMessagebox import CTkMessagebox
-
+from Spinbox import CTkSpinbox
 
 
 class CTk_Application():
     def __init__(self, app, default_k):
         self.show_plot = "True"
+        self.delimiter = ";"
 
         try:
             self.file_name = [file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0]
@@ -38,17 +39,22 @@ class CTk_Application():
                 self.RESET = colorama.Fore.RESET
                 self.BLUE = colorama.Fore.BLUE
                 self.MAGENTA = colorama.Fore.MAGENTA
-            if self.k_entry.get() != "" and self.k_entry.get().isdigit():
-                self.k = int(self.k_entry.get())
+            if self.k_spinbox.get() != "" and str(self.k_spinbox.get()).isdigit():
+                self.k = int(self.k_spinbox.get())
             if self.show_plot_var.get() == 1:
                 self.show_plot = "True"
             else:
                 self.show_plot = "False"
             
-            if self.k_entry.get().isdigit():
+            if str(self.k_spinbox.get()).isdigit():
                 try:
                     open(f"{path.dirname(__file__)}\\tables\\{self.file_name[:-4]}.csv", "r", encoding="utf8")
-                    app(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
+                    try:
+                        app(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA), delimiter=self.delimiter)
+                    except Exception:
+                        system("cls")
+                        CTkMessagebox(title="", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'", border_color="#efb700", border_width=2,
+                                        icon="warning", corner_radius=0, width=280, button_width=120)
                 except FileNotFoundError:
                     CTkMessagebox(title="", message=f"{self.file_name} not found. Maybe the file was deleted while this program is running? (Menu refreshed)", border_color="#efb700", border_width=2,
                                         icon="warning", corner_radius=0, width=280, button_width=120)
@@ -89,8 +95,9 @@ class CTk_Application():
         self.k_label = ctk.CTkLabel(self.k_frame, text="K:")
         self.k_label.pack(side="left", padx=5)
         self.k_var = ctk.StringVar(value=default_k)
-        self.k_entry = ctk.CTkEntry(self.k_frame, textvariable=self.k_var)
-        self.k_entry.pack(side="left", padx=5)
+        self.k_spinbox = CTkSpinbox(self.k_frame, width=110, step_size=1)
+        self.k_spinbox.pack(side="left", padx=5)
+        self.k_spinbox.set(default_k)
         
         
         def get_file_name_optionmenu(value):
@@ -107,6 +114,10 @@ class CTk_Application():
                                        variable=optionmenu_var,
                                        dynamic_resizing=False)
         self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
+        self.file_name_refresh_button = ctk.CTkButton(self.file_name_frame, text="Refresh", width=70,
+                                                      command=lambda:self.file_name_optionmenu.configure(values=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"],
+                                                                                                  variable=ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])))
+        self.file_name_refresh_button.pack(side="left", padx=5, pady=5)
 
 
         self.show_plot_frame = ctk.CTkFrame(self.root, fg_color='transparent')
@@ -125,6 +136,24 @@ class CTk_Application():
         self.use_colors_var = ctk.IntVar(value=1)
         self.use_colors_checkbutton = ctk.CTkSwitch(self.use_colors_frame, variable=self.use_colors_var, text="")
         self.use_colors_checkbutton.pack()
+        
+        
+        
+        def get_delimiter_optionmenu(value):
+            self.delimiter = value
+        
+        self.delimiter_frame = ctk.CTkFrame(self.root, fg_color='transparent')
+        self.delimiter_frame.grid(row=5, column=0, sticky="we")
+        self.delimiter_label = ctk.CTkLabel(self.delimiter_frame, text=".csv file delimiter:")
+        self.delimiter_label.pack(side="left", padx=5)
+        optionmenu_var = ctk.StringVar(value=";")
+        self.delimiter_optionmenu = ctk.CTkOptionMenu(self.delimiter_frame,
+                                       values=[";", ","],
+                                       command=get_delimiter_optionmenu,
+                                       variable=optionmenu_var,
+                                       dynamic_resizing=False,
+                                       width=50)
+        self.delimiter_optionmenu.pack(side="left", padx=5, pady=5)
 
         
         self.root.mainloop()
