@@ -194,6 +194,9 @@ f'''
             if k>len(self.data):
                 k = len(self.data)-1
             
+            
+            [x[2][0] for x in self.data]# to get an error if file delimiter is not correct
+            
             knn(k)
             if show_plot == "True":
                 if len(self.x)-1 <= 2:

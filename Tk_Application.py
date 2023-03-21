@@ -51,7 +51,7 @@ class Tk_Application():
                         app(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA), delimiter=self.delimiter)
                     except Exception:
                         system("cls")
-                        showwarning(title="Error !", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'")
+                        showwarning(title="Error !", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'.\nMaybe the delimiter is wrong or the file isn't correct.")
 
                 except FileNotFoundError:
                     showwarning(title="Error !", message=f"{self.file_name} not found. Maybe the file was deleted while this program is running? (Menu refreshed)")

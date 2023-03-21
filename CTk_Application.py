@@ -52,8 +52,7 @@ class CTk_Application():
                     try:
                         app(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA), delimiter=self.delimiter)
                     except Exception:
-                        system("cls")
-                        CTkMessagebox(title="", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'", border_color="#efb700", border_width=2,
+                        CTkMessagebox(title="", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'.\nMaybe the delimiter is wrong or the file isn't correct.", border_color="#efb700", border_width=2,
                                         icon="warning", corner_radius=0, width=280, button_width=120)
                 except FileNotFoundError:
                     CTkMessagebox(title="", message=f"{self.file_name} not found. Maybe the file was deleted while this program is running? (Menu refreshed)", border_color="#efb700", border_width=2,
