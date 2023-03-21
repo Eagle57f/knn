@@ -5,13 +5,14 @@ import colorama
 from matplotlib.lines import Line2D
 import tabulate
 from collections import OrderedDict
-from os import path, system, getenv, listdir
+from os import path, system, getenv
 import numpy as np
 import dotenv
-import tkinter as tk
-import customtkinter as ctk
-from CTkMessagebox import CTkMessagebox
 
+# ------------------------------------------
+from CTk_Application import CTk_Application
+from Tk_Application import Tk_Application
+# ------------------------------------------
 
 colorama.init()
 
@@ -21,9 +22,7 @@ default_delimiter = getenv('default_delimiter')
 
 default_k = getenv('default_k')
 default_filename = getenv("default_filename")
-default_plot_show = getenv("default_plot_show")
 
-show_tkinter = getenv("show_tkinter")
 use_custon_tkinter = getenv("use_custon_tkinter")
 
 
@@ -44,7 +43,7 @@ class Application():
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       22     |    2.84454   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
-    ‖ aaaaaaaaaaa     ‖       2*0     |    3.69878   |      ...    ‖
+    ‖ aaaaaaaaaaa     ‖       2*0    |    3.69878   |      ...    ‖
     +-----------------+--------------+--------------+--------------+
     ‖ bbbbbbbbbbbbbb  ‖       31     |    3.69878   |      ...     ‖
     +-----------------+--------------+--------------+--------------+
@@ -205,255 +204,10 @@ f'''
                     print(f"\n\n{RED}More than 3 characteristics: cannot be displayed in a 2D  or 3D graphic{RESET}")
             
 
-            
-
-class Tk_Application():
-    def __init__(self):
-        self.show_plot = "True"
-
-        try:
-            self.file_name = [file for file in listdir(f"{path.dirname(__file__)}\\tables")][0]
-        except IndexError:
-            print("No .csv file(s) in /tables")
-            exit()
-        except FileNotFoundError:
-            print("No 'tables' folder")
-            exit()
-
-        self.k = 20
-        self.RED = colorama.Fore.RED
-        self.CYAN = colorama.Fore.CYAN
-        self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
-        self.RESET = colorama.Fore.RESET
-        self.BLUE = colorama.Fore.BLUE
-        self.MAGENTA = colorama.Fore.MAGENTA
-        
-        def app_launch():
-            if self.use_colors_var.get() == 0:
-                self.RED = self.CYAN = self.LIGHTBLUE_EX = self.RESET = self.BLUE = self.MAGENTA = colorama.Fore.RESET
-            else:
-                self.RED = colorama.Fore.RED
-                self.CYAN = colorama.Fore.CYAN
-                self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
-                self.RESET = colorama.Fore.RESET
-                self.BLUE = colorama.Fore.BLUE
-                self.MAGENTA = colorama.Fore.MAGENTA
-            if self.k_entry.get() != "" and self.k_entry.get().isdigit():
-                self.k = int(self.k_entry.get())
-            if self.show_plot_var.get() == 1:
-                self.show_plot = "True"
-            else:
-                self.show_plot = "False"
-                
-            if self.k_entry.get().isdigit():
-                Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
-        
-        
-        self.root = tk.Tk()
-        self.root.title("Settings")
-        self.root.geometry("200x115")
-        self.root.resizable(False, False)
-        
-        menubar = tk.Menu(self.root)
-        self.root.config(menu=menubar)
-
-
-        actions_menu = tk.Menu(menubar, tearoff=False)
-        actions_menu.add_command(
-            label='Launch',
-            command=app_launch
-        )
-        actions_menu.add_separator()
-        actions_menu.add_command(
-            label='Exit',
-            command=self.root.destroy
-        )
-        menubar.add_cascade(
-            label="Actions",
-            menu=actions_menu
-        )
-
-        menubar.add_command(
-            label='Help',
-            command=lambda: (system("cls"), print(Application.__doc__))
-        )
-
-        
-
-        self.k_frame = tk.Frame(self.root)
-        self.k_frame.grid(row=0, column=0, sticky="we")
-        self.k_label = tk.Label(self.k_frame, text="K:")
-        self.k_label.pack(side="left")
-        self.k_var = tk.StringVar(value=default_k)
-        self.k_entry = tk.Entry(self.k_frame, textvariable=self.k_var)
-        self.k_entry.pack(side="right", padx=10)
-        
-        
-        def get_file_name_optionmenu(value):
-            self.file_name = value
-        
-
-        self.file_name_frame = tk.Frame(self.root)
-        self.file_name_frame.grid(row=1, column=0, sticky="we")
-        self.file_name_label = tk.Label(self.file_name_frame, text="Filename:")
-        self.file_name_label.pack(side="left")
-        optionmenu_var = tk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables")][0])
-        self.file_name_optionmenu = tk.OptionMenu(self.file_name_frame,
-                                                  optionmenu_var,
-                                                  *[file for file in listdir(f"{path.dirname(__file__)}\\tables")],
-                                                  command=get_file_name_optionmenu
-                                                  )
-        self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
-
-
-
-        self.show_plot_frame = tk.Frame(self.root)
-        self.show_plot_frame.grid(row=2, column=0, sticky=tk.W)
-        self.show_plot_label = tk.Label(self.show_plot_frame, text="Show the plot:")
-        self.show_plot_label.pack(side="left")
-        self.show_plot_var = tk.IntVar(value=1)
-        self.show_plot_checkbutton = tk.Checkbutton(self.show_plot_frame, variable=self.show_plot_var)
-        self.show_plot_checkbutton.pack()
-        
-
-        self.use_colors_frame = tk.Frame(self.root)
-        self.use_colors_frame.grid(row=3, column=0, sticky=tk.W)
-        self.use_colors_label = tk.Label(self.use_colors_frame, text="Show the results in color:")
-        self.use_colors_label.pack(side="left")
-        self.use_colors_var = tk.IntVar(value=1)
-        self.use_colors_checkbutton = tk.Checkbutton(self.use_colors_frame, variable=self.use_colors_var)
-        self.use_colors_checkbutton.pack()
-        
-        
-        
-        self.root.mainloop()
-    
-    
-
-class CTk_Application():
-    def __init__(self):
-        self.show_plot = "True"
-
-        try:
-            self.file_name = [file for file in listdir(f"{path.dirname(__file__)}\\tables")][0]
-        except IndexError:
-            print("No .csv file(s) in /tables")
-            exit()
-        except FileNotFoundError:
-            print("No 'tables' folder")
-            exit()
-
-        self.k = 20
-        self.RED = colorama.Fore.RED
-        self.CYAN = colorama.Fore.CYAN
-        self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
-        self.RESET = colorama.Fore.RESET
-        self.BLUE = colorama.Fore.BLUE
-        self.MAGENTA = colorama.Fore.MAGENTA
-        
-        def app_launch():
-            if self.use_colors_var.get() == 0:
-                self.RED = self.CYAN = self.LIGHTBLUE_EX = self.RESET = self.BLUE = self.MAGENTA = colorama.Fore.RESET
-            else:
-                self.RED = colorama.Fore.RED
-                self.CYAN = colorama.Fore.CYAN
-                self.LIGHTBLUE_EX = colorama.Fore.LIGHTBLUE_EX
-                self.RESET = colorama.Fore.RESET
-                self.BLUE = colorama.Fore.BLUE
-                self.MAGENTA = colorama.Fore.MAGENTA
-            if self.k_entry.get() != "" and self.k_entry.get().isdigit():
-                self.k = int(self.k_entry.get())
-            if self.show_plot_var.get() == 1:
-                self.show_plot = "True"
-            else:
-                self.show_plot = "False"
-                
-            if self.k_entry.get().isdigit():
-                Application(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA))
-            else:
-                def msgbox():
-                    msg = CTkMessagebox(title="Error !", message="K value is not integer", border_color="#efb700", border_width=2,
-                                        icon="warning", option_1="Cancel", option_3="Retry", corner_radius=0, width=280, button_width=120)
-                    if msg.get()=="Retry":
-                        msgbox()
-                msgbox()
-
-        self.root = ctk.CTk()
-        self.root.title("Settings")
-        self.root.geometry("300x200")
-        self.root.resizable(False, False)
-        
-        
-        
-        def get_optionmenu(value):
-            self.optionmenu.set("Actions")
-            if value == "Launch":
-                app_launch()
-            elif value == "Exit":
-                self.root.destroy()
-
-
-        self.optionmenu_frame = ctk.CTkFrame(self.root, fg_color='transparent')
-        self.optionmenu_frame.grid(row=0, column=0, sticky="nw")
-        self.optionmenu = ctk.CTkOptionMenu(master=self.optionmenu_frame,
-                                       values=["Launch", "Exit"],
-                                       command=get_optionmenu)
-        self.optionmenu.pack(side="left", padx=5, pady=5)
-        self.optionmenu.set("Actions")
-        self.help_button = ctk.CTkButton(self.optionmenu_frame, text="Help", command=lambda:(system("cls"), print(Application.__doc__)))
-        self.help_button.pack(side="right", padx=5, pady=5)
-
-
-        self.k_frame = ctk.CTkFrame(self.root, fg_color='transparent')
-        self.k_frame.grid(row=1, column=0, sticky="we")
-        self.k_label = ctk.CTkLabel(self.k_frame, text="K:")
-        self.k_label.pack(side="left", padx=5)
-        self.k_var = ctk.StringVar(value=default_k)
-        self.k_entry = ctk.CTkEntry(self.k_frame, textvariable=self.k_var)
-        self.k_entry.pack(side="right", padx=5)
-        
-        
-        def get_file_name_optionmenu(value):
-            self.file_name = value
-        
-        self.file_name_frame = ctk.CTkFrame(self.root, fg_color='transparent')
-        self.file_name_frame.grid(row=2, column=0, sticky="we")
-        self.file_name_label = ctk.CTkLabel(self.file_name_frame, text="Filename:")
-        self.file_name_label.pack(side="left", padx=5)
-        optionmenu_var = ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables")][0])
-        self.file_name_optionmenu = ctk.CTkOptionMenu(self.file_name_frame,
-                                       values=[file for file in listdir(f"{path.dirname(__file__)}\\tables")],
-                                       command=get_file_name_optionmenu,
-                                       variable=optionmenu_var)
-        self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
-
-
-        self.show_plot_frame = ctk.CTkFrame(self.root, fg_color='transparent')
-        self.show_plot_frame.grid(row=3, column=0, sticky=tk.W)
-        self.show_plot_label = ctk.CTkLabel(self.show_plot_frame, text="Show the plot:")
-        self.show_plot_label.pack(side="left", padx=5)
-        self.show_plot_var = ctk.IntVar(value=1)
-        self.show_plot_switch = ctk.CTkSwitch(self.show_plot_frame, variable=self.show_plot_var, text="")
-        self.show_plot_switch.pack()
-        
-        
-        self.use_colors_frame = ctk.CTkFrame(self.root, fg_color='transparent')
-        self.use_colors_frame.grid(row=4, column=0, sticky=tk.W)
-        self.use_colors_label = ctk.CTkLabel(self.use_colors_frame, text="Show the results in color:")
-        self.use_colors_label.pack(side="left", padx=5)
-        self.use_colors_var = ctk.IntVar(value=1)
-        self.use_colors_checkbutton = ctk.CTkSwitch(self.use_colors_frame, variable=self.use_colors_var)
-        self.use_colors_checkbutton.pack()
-
-        
-        self.root.mainloop()
-        
-      
-
 
 
 system("cls")
 if use_custon_tkinter == "True":
-    CTk_Application()
+    CTk_Application(Application, default_k)
 else:
-    Tk_Application()
+    Tk_Application(Application, default_k)
