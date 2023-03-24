@@ -56,15 +56,15 @@ class CTk_Application():
                         app(k=self.k, file_name=self.file_name[:-4], show_plot=self.show_plot, colors=(self.RED, self.CYAN, self.LIGHTBLUE_EX, self.RESET, self.BLUE, self.MAGENTA), delimiter=self.delimiter)
                     except Exception:
                         CTkMessagebox(title="", message=f"Error while reading '{self.file_name}' with delimiter '{self.delimiter}'.\nMaybe the delimiter is wrong or the file isn't correct.", border_color="#efb700", border_width=2,
-                                        icon="warning", corner_radius=0, width=280, button_width=120)
+                                        icon="warning", corner_radius=0, width=400, button_width=120)
                 except FileNotFoundError:
                     CTkMessagebox(title="", message=f"{self.file_name} not found. Maybe the file was deleted while this program is running? (Menu refreshed)", border_color="#efb700", border_width=2,
-                                        icon="warning", corner_radius=0, width=280, button_width=120)
+                                        icon="warning", corner_radius=0, width=400, button_width=120)
                     self.file_name_optionmenu.configure(values=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"], variable=ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0]))
                     
             else:
                 CTkMessagebox(title="", message="K value is not integer", border_color="#efb700", border_width=2,
-                                        icon="warning", corner_radius=0, width=280, button_width=120)
+                                        icon="warning", corner_radius=0, width=400, button_width=120)
 
         self.root = ctk.CTk()
         self.root.title("Settings")
@@ -109,11 +109,11 @@ class CTk_Application():
         self.file_name_frame.grid(row=2, column=0, sticky="we")
         self.file_name_label = ctk.CTkLabel(self.file_name_frame, text="Filename:")
         self.file_name_label.pack(side="left", padx=5)
-        optionmenu_var = ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
+        self.file_name_optionmenu_var = ctk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
         self.file_name_optionmenu = ctk.CTkOptionMenu(self.file_name_frame,
                                        values=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"],
                                        command=get_file_name_optionmenu,
-                                       variable=optionmenu_var,
+                                       variable=self.file_name_optionmenu_var,
                                        dynamic_resizing=False)
         self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
         self.file_name_refresh_button = ctk.CTkButton(self.file_name_frame, text="Refresh", width=70,
@@ -148,11 +148,11 @@ class CTk_Application():
         self.delimiter_frame.grid(row=5, column=0, sticky="we")
         self.delimiter_label = ctk.CTkLabel(self.delimiter_frame, text=".csv file delimiter:")
         self.delimiter_label.pack(side="left", padx=5)
-        optionmenu_var = ctk.StringVar(value=";")
+        self.delimiter_optionmenu_var = ctk.StringVar(value=";")
         self.delimiter_optionmenu = ctk.CTkOptionMenu(self.delimiter_frame,
                                        values=[";", ","],
                                        command=get_delimiter_optionmenu,
-                                       variable=optionmenu_var,
+                                       variable=self.delimiter_optionmenu_var,
                                        dynamic_resizing=False,
                                        width=50)
         self.delimiter_optionmenu.pack(side="left", padx=5, pady=5)

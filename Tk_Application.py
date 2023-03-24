@@ -110,9 +110,9 @@ class Tk_Application():
         self.file_name_frame.grid(row=1, column=0, sticky="we")
         self.file_name_label = tk.Label(self.file_name_frame, text="Filename:")
         self.file_name_label.pack(side="left")
-        self.optionmenu_var = tk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
+        self.file_name_optionmenu_var = tk.StringVar(value=[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
         self.file_name_optionmenu = tk.OptionMenu(self.file_name_frame,
-                                                  self.optionmenu_var,
+                                                  self.file_name_optionmenu_var,
                                                   *[file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"],
                                                   command=get_file_name_optionmenu
                                                   )
@@ -120,7 +120,7 @@ class Tk_Application():
         self.file_name_optionmenu.pack(side="left", padx=5, pady=5)
 
         def refresh_file_name():
-            self.optionmenu_var.set([file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
+            self.file_name_optionmenu_var.set([file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"][0])
             self.file_name_optionmenu['menu'].delete(0, 'end')
             for item in [file for file in listdir(f"{path.dirname(__file__)}\\tables") if file[-4:] == ".csv"]:
                 self.file_name_optionmenu['menu'].add_command(label=item, command=tk._setit(tk.StringVar(), item))
@@ -156,9 +156,9 @@ class Tk_Application():
         self.delimiter_frame.grid(row=5, column=0, sticky="we")
         self.delimiter_label = tk.Label(self.delimiter_frame, text=".csv file delimiter:")
         self.delimiter_label.pack(side="left", padx=5)
-        self.optionmenu_var = tk.StringVar(value=";")
+        self.delimiter_optionmenu_var = tk.StringVar(value=";")
         self.delimiter_optionmenu = tk.OptionMenu(self.delimiter_frame,
-                                                  self.optionmenu_var,
+                                                  self.delimiter_optionmenu_var,
                                                   *[";", ","],
                                                   command=get_delimiter_optionmenu)
         self.file_name_optionmenu.configure(width=10)
