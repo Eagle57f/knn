@@ -17,7 +17,7 @@ from Tk_Application import Tk_Application
 
 colorama.init()
 
-dotenv.load_dotenv("settings.env", verbose=True)
+dotenv.load_dotenv(f"{path.dirname(__file__)}\\settings.env", verbose=True)
 
 default_k = getenv('default_k')
 default_filename = getenv("default_filename")
@@ -89,6 +89,8 @@ class Application():
                 circle = plt.Circle((float(self.x[list(self.x.keys())[1]]), float(self.x[list(self.x.keys())[2]])), radius=self.data[k][1], alpha=0.1)
                 plt.gca().add_artist(circle)
                 ax.set_aspect("equal")
+                plt.xlabel(list(self.x.keys())[1])
+                plt.ylabel(list(self.x.keys())[2])
 
             elif mode == "3d":
                 points_list = list(zip(x, y, z, name_colors))
@@ -104,6 +106,9 @@ class Application():
                 z = self.data[k][1]*cos(phi) + float(self.x[list(self.x.keys())[3]])
                 ax.plot_surface(x, y, z, rstride=1, cstride=1, color='c', alpha=0.1, linewidth=0)
                 ax.set_aspect("equal")
+                ax.set_xlabel(list(self.x.keys())[1])
+                ax.set_ylabel(list(self.x.keys())[2])
+                ax.set_zlabel(list(self.x.keys())[3])
             
 
 
